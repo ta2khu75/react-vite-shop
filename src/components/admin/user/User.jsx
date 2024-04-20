@@ -15,9 +15,9 @@ const User = () => {
   const [pageCount, setPageCount] = useState(0);
   const SIZE = 5;
   useEffect(() => {
-    fetchPageUser(currentPage);
+    fetchPageUser();
   }, [currentPage]);
-  const fetchPageUser = async (currentPage) => {
+  const fetchPageUser = async () => {
     const data = await getPageUser(currentPage, SIZE);
     console.log(data);
     if (_.isEmpty(data.paginate)) {

@@ -4,27 +4,32 @@ import PropTypes from "prop-types";
 import Form from "react-bootstrap/Form";
 import { useState } from "react";
 import { login } from "../../services/user.service";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import { useSelector, useDispatch } from "react-redux";
+import { setToken } from "../../redux/slice/accessTokenSlice";
 const LoginModal = ({ show, setShow }) => {
-    const [email, setEmail]=useState("");
-    const [pwd, setPwd]=useState("");
-    const [emailInvali, setEmailInvali]=useState(false);
+  const token = useSelector((state) => state.accessToken.value);
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState("");
+  const [pwd, setPwd] = useState("");
+  const [emailInvali, setEmailInvali] = useState(false);
   const handleClose = () => setShow(false);
-  const handleLogin=async(event)=>{
-    event.preventDefault()
-    if(validateEmail(email)){
-        setEmailInvali(false)
-        try {
-            const data=await login(email, pwd);
-            console.log(data);
-            toast.success(data.message)
-        } catch (error) {
-            toast.error(error.message)        
-        }
-    }else{
-        setEmailInvali(true);
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    if (validateEmail(email)) {
+      setEmailInvali(false);
+      try {
+        const data = await login(email, pwd);
+        toast.success(data.message);
+        //console.log(data.token);
+        dispatch(setToken(data.token));
+      } catch (error) {
+        toast.error(error.message);
+      }
+    } else {
+      setEmailInvali(true);
     }
-  }
+  };
   const validateEmail = (email) => {
     return String(email)
       .toLowerCase()
@@ -39,17 +44,27 @@ const LoginModal = ({ show, setShow }) => {
           <Modal.Title>Login</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={(event)=>handleLogin(event)}>
+          <Form onSubmit={(event) => handleLogin(event)}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email address</Form.Label>
-              <Form.Control value={email} onChange={(event)=>setEmail(event.target.value)} type="email" placeholder="Enter email" />
-              {emailInvali && <Form.Text className="text-muted">
-                Email invalidate
-              </Form.Text>}
+              <Form.Control
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                type="email"
+                placeholder="Enter email"
+              />
+              {emailInvali && (
+                <Form.Text className="text-muted">Email invalidate</Form.Text>
+              )}
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" value={pwd} onChange={(event)=>setPwd(event.target.value)} placeholder="Password" />
+              <Form.Control
+                type="password"
+                value={pwd}
+                onChange={(event) => setPwd(event.target.value)}
+                placeholder="Password"
+              />
             </Form.Group>
             <Button variant="danger" type="submit" className="w-100">
               Submit

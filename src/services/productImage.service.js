@@ -3,7 +3,7 @@ const getAllProductImages = (id) =>{
     if(id==undefined) return [];
     return axios.get(`admin/product-images/product/${id}`);
 }
-const getProductimage =async (id,name) =>{
+const getProductImages =async (id,name) =>{
     try {
         const productImage=await  axios.get(`admin/product-images/image/${id}?name=${name}`, {
       responseType: "blob",
@@ -31,4 +31,4 @@ const updateProductImage=(id, productId, file)=>{
 const deleteProductImage=(id)=>{
     return axios.delete(`admin/product-images/${id}`)
 }
-export {getAllProductImages,getProductimage, addProductImage, updateProductImage, deleteProductImage}
+export {getAllProductImages,getProductImages, addProductImage, updateProductImage, deleteProductImage}

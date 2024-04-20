@@ -2,15 +2,33 @@ import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Link } from "react-router-dom";
 
 import CarouselContainer from "./CarouselContainer";
-import CategoryList from "./CategoryList";
-import Categoryy from "./Categoryy";
+import ProductList from "./ProductList";
 import { getAllCategory, getImageCategory } from "../services/category.service";
 import { useEffect, useState } from "react";
+import { getAllProducts, getProductImage } from "../services/product.service";
+import Category from "./Category";
 const Home = () => {
   const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
   useEffect(() => {
     fetchAllCategory();
+    fetchAllProducts();
   }, []);
+  const fetchAllProducts = async () => {
+    try {
+      const data = await getAllProducts();
+      setProducts(
+        await Promise.all(
+          data.map(async (product) => {
+            const imageUrl = await getProductImage(product.thumbnail);
+            return { ...product, imageUrl }; //...(imageUrl?{thumbnail:imageUrl}:{}) };
+          })
+        )
+      );
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
   const fetchAllCategory = async () => {
     try {
       const data = await getAllCategory();
@@ -31,7 +49,6 @@ const Home = () => {
       const response = await getImageCategory(category.image);
       return URL.createObjectURL(response);
     } catch (error) {
-      //console.error("Error fetching image:", error);
       return null;
     }
   };
@@ -57,14 +74,14 @@ const Home = () => {
                 component={<Link to={`/category/${category.id}`} />}
               >
                 {" "}
-                <Categoryy name={category.name} image={category.imageUrl} />
+                <Category name={category.name} image={category.imageUrl} />
               </MenuItem>
             ))}
           </Menu>
         </Sidebar>
         <div>
           <CarouselContainer />
-          <CategoryList categories={categories} />
+          <ProductList products={products} />
         </div>
       </div>
     </>

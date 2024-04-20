@@ -2,10 +2,14 @@ import { Button, Tab, Tabs } from "react-bootstrap";
 import ModalComponent from "../ModalComponent";
 import { useEffect, useState } from "react";
 import ProductForm from "./ProductForm";
-import { deleteProduct, getAllProducts, getProductImage } from "../../../services/product.service";
+import {
+  deleteProduct,
+  getAllProducts,
+  getProductImage,
+} from "../../../services/product.service";
 import TableComponent from "../TableComponent";
 import ConfirmComponent from "../ConfirmComponent";
-import ProductDetails from "../../ProductDetails";
+import ProductDetails from "./ProductDetails";
 import { toast } from "react-toastify";
 import { getAllCategory } from "../../../services/category.service";
 const Product = () => {
@@ -15,45 +19,42 @@ const Product = () => {
   const [product, setProduct] = useState({});
   const [products, setProducts] = useState([]);
   const [titles, setTitles] = useState([]);
-  const [imageUrl, setImageUrl] = useState(null)
+  const [imageUrl, setImageUrl] = useState(null);
   const [name, setName] = useState("");
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState({});
 
   useEffect(() => {
     fetchAllProducts();
     fetchAllCategory();
   }, []);
-  useEffect(()=>{
-    setCategory(categories.find(c => c.id==categoryId));
-    // console.log(result);
-    // categories.forEach(category=>{
-    //   if(category.id==categoryId){
-    //     console.log(true);
-    //     setCategory(category);
-    //   }
-    // })
-  },[categoryId]);
-  const fetchAllCategory=async()=>{
+  useEffect(() => {
+    setCategory(
+      categories.find((c) => {
+        return c.id == (product.categoryId ? product.categoryId : categoryId);
+      })
+    );
+  }, [product.categoryId, categoryId]);
+  const fetchAllCategory = async () => {
     try {
       const data = await getAllCategory();
-      
-      setCategories(data)
+
+      setCategories(data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
-  }
+  };
   const fetchAllProducts = async () => {
-     try {
+    try {
       const data = await getAllProducts();
       let pro;
       setProducts(
         await Promise.all(
           data.map(async (product) => {
             const imageUrl = await getProductImage(product.thumbnail);
-            pro={...product, imageUrl}
-            return { ...product, imageUrl}//...(imageUrl?{thumbnail:imageUrl}:{}) };
+            pro = { ...product, imageUrl };
+            return { ...product, imageUrl }; //...(imageUrl?{thumbnail:imageUrl}:{}) };
           })
         )
       );
@@ -76,19 +77,19 @@ const Product = () => {
   const handleView = (product) => {
     setProduct(product);
     setKey("preview");
-  }
-  const handleDelete = async() => {
+  };
+  const handleDelete = async () => {
     try {
-      const data=await deleteProduct(product.id);
+      const data = await deleteProduct(product.id);
       toast.success(data.message);
       setConfirm(false);
       setProduct({});
-      fetchAllProducts();  
+      fetchAllProducts();
     } catch (error) {
       toast.error(error.message);
     }
-  }
-  
+  };
+
   return (
     <div className="container-fluid">
       <div>
@@ -96,7 +97,13 @@ const Product = () => {
           Create Product
         </Button>
         <ModalComponent show={show} setShow={setShow} />
-        <ConfirmComponent handleConfirm={handleDelete} setShow={setConfirm} show={confirm} message={`Do you want to delete product name: ${product.name}`} title={"Delete Product".toUpperCase()} />
+        <ConfirmComponent
+          handleConfirm={handleDelete}
+          setShow={setConfirm}
+          show={confirm}
+          message={`Do you want to delete product name: ${product.name}`}
+          title={"Delete Product".toUpperCase()}
+        />
         <Tabs
           id="controlled-tab-example"
           activeKey={key}
@@ -104,13 +111,38 @@ const Product = () => {
           className="mb-3"
         >
           <Tab eventKey="form" title="Form">
-            <ProductForm fetchAllProducts={fetchAllProducts} setImageUrl={setImageUrl} categoryId={categoryId} setCategoryId={setCategoryId} name={name} setName={setName} categories={categories} product={product} setProduct={setProduct} />
+            <ProductForm
+              fetchAllProducts={fetchAllProducts}
+              setImageUrl={setImageUrl}
+              categoryId={categoryId}
+              setCategoryId={setCategoryId}
+              name={name}
+              setName={setName}
+              categories={categories}
+              product={product}
+              setProduct={setProduct}
+            />
           </Tab>
           <Tab eventKey="table" title="Table">
-            <TableComponent view={true} handleView={handleView} titles={titles} bool={true} boolTrue={"Active"} boolFalse={"Non Active"}  items={products} handleConfirm={handleConfirm} handleEdit={handleEdit}/>
+            <TableComponent
+              view={true}
+              handleView={handleView}
+              titles={titles}
+              bool={true}
+              boolTrue={"Active"}
+              boolFalse={"Non Active"}
+              items={products}
+              handleConfirm={handleConfirm}
+              handleEdit={handleEdit}
+            />
           </Tab>
           <Tab eventKey="preview" title="Preview">
-            <ProductDetails category={category} name={name}  imageUrl={imageUrl} product={product}/>
+            <ProductDetails
+              category={category}
+              name={name}
+              imageUrl={imageUrl}
+              product={product}
+            />
           </Tab>
         </Tabs>
       </div>

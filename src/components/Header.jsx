@@ -6,11 +6,13 @@ import RegisterModal from "./user/RegisterModal";
 import { useState } from "react";
 import LoginModal from "./user/LoginModal";
 import { Link, NavLink } from "react-router-dom";
-import { toast } from "react-toastify";
 import { Button, Form, Image } from "react-bootstrap";
 import logo from "../assets/ee828743c9afa9792cf20d75995e134e.png";
+import { useDispatch } from "react-redux";
+import { resetToken } from "../redux/slice/accessTokenSlice";
 
 const Header = () => {
+  const dispatch=useDispatch()
   const [showRegister, setShowRegister] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   return (
@@ -47,18 +49,18 @@ const Header = () => {
           </Navbar.Collapse>
           <NavDropdown title="Account" id="basic-nav-dropdown">
             <NavDropdown.ItemText>
-              <button className="btn" onClick={() => setShowRegister(true)}>
+              <button className="btn btn-outline-primary" onClick={() => setShowRegister(true)}>
                 Register
               </button>
             </NavDropdown.ItemText>
             <NavDropdown.Header>
-              <button className="btn" onClick={() => setShowLogin(true)}>
+              <button className="btn btn-outline-primary" onClick={() => setShowLogin(true)}>
                 Login
               </button>
             </NavDropdown.Header>
             <NavDropdown.ItemText>
-              <button onClick={() => toast.info("fdsasfdsafds")}>
-                something
+              <button className="btn btn-outline-primary" onClick={() => dispatch(resetToken())}>
+                Logout
               </button>
             </NavDropdown.ItemText>
             <NavDropdown.Divider />

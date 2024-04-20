@@ -40,9 +40,9 @@ const TableComponent = ({
                     return <td key={index}>{value ? boolTrue : boolFalse}</td>;
                   } else if (isBlobURL(value)) {
                     return
-                  } else if(typeof value === "object")return <td key={index}>{value.name}</td>;
+                  } else if(typeof value === "object")return <td key={index}>{value?.name}</td>;
                 }else if(isBlobURL(value)) return;
-                else if(typeof value === "object")return <td key={index}>{value.name}</td>;
+                else if(typeof value === "object")return <td key={index}>{value?.name}</td>;
                 
                 return <td key={value}>{value}</td>;
               })}

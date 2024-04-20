@@ -30,10 +30,11 @@ const getProductImage = async (name) => {
     });
     return URL.createObjectURL(data);
   } catch (error) {
-    return
+    return;
   }
-
-  
+};
+const getProduct = (id) => {
+  return axios.get(`admin/product/${id}`);
 };
 export {
   getAllProducts,
@@ -41,4 +42,5 @@ export {
   updateProduct,
   deleteProduct,
   getProductImage,
+  getProduct,
 };
