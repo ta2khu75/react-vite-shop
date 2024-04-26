@@ -5,10 +5,9 @@ import Form from "react-bootstrap/Form";
 import { useState } from "react";
 import { login } from "../../services/user.service";
 import { toast } from "react-toastify";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setToken } from "../../redux/slice/accessTokenSlice";
-const LoginModal = ({ show, setShow }) => {
-  const token = useSelector((state) => state.accessToken.value);
+const LoginModal = ({ show, setShow, showRegister, setShowRegister }) => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
@@ -78,5 +77,7 @@ const LoginModal = ({ show, setShow }) => {
 LoginModal.propTypes = {
   show: PropTypes.bool.isRequired,
   setShow: PropTypes.func.isRequired,
+  setShowRegister: PropTypes.func.isRequired,
+  showRegister: PropTypes.bool.isRequired
 };
 export default LoginModal;

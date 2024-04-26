@@ -7,9 +7,11 @@ function App() {
   return (
     <>
       <Header />
-      <div className="container mb-4">
-        <Outlet />
-        <Footer />
+      <div className="d-flex justify-content-center">
+        <div className="w-75 mb-4">
+          <Outlet />
+          <Footer />
+        </div>
       </div>
     </>
   );

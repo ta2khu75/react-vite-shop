@@ -20,6 +20,8 @@ import { toast } from "react-toastify";
 import ModalComponent from "../admin/ModalComponent";
 import ProductDetailsForm from "../admin/product/ProductDetailsForm";
 import { getAllProductDetails } from "../../services/productDetails.service";
+import QuantityComponent from "./QuantityComponent";
+import { getUserById } from "../../services/user.service";
 const ProductInfo = ({ product, category, name, edit }) => {
   const [childId, setChildId] = useState(undefined);
   const [childName, setChildName] = useState("");
@@ -32,12 +34,15 @@ const ProductInfo = ({ product, category, name, edit }) => {
   const [optionId, setOptionId] = useState(null);
   const [showProductDetails, setShowProductDetails]=useState(false);
   const [productDetails, setProductDetails]=useState([]);
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState("Contact");
   const [productDetailsId, setProductDetailsId] = useState(undefined);
+  const [priceFormat, setPriceFormat]=useState("");
+  const [user, setUser]=useState({});
   useEffect(() => {
     fetchAllProductDetails();
     fetchAllProductOptions();
     fetchAllProductSizes();
+    fetchUser();
   }, [product.id]);
   useEffect(() => {
     setChildId(child.id);
@@ -46,15 +51,20 @@ const ProductInfo = ({ product, category, name, edit }) => {
   useEffect(() => {
     const result = productDetails.find(
       (productDetail) =>
-        productDetail.size.id == sizeId && productDetail.option.id == optionId
+        productDetail.size?.id == sizeId && productDetail.option?.id == optionId
     );
-    setPrice(result?.price);
+    setPrice(result?.price?result.price*1:"Contact");
+    setPriceFormat(result?.price?(result.price*1).toLocaleString("vi-VN"):"Contact")
     setProductDetailsId(result?.id);
   },[sizeId, optionId])
   const fetchAllProductSizes = async () => {
     const data = await getAllProductSizes(product.id);
     setSizes(data);
   };
+  const fetchUser=async()=>{
+    const data= await getUserById(product.userId);
+    setUser(data);
+  }
   const fetchAllProductOptions = async () => {
     const data = await getAllProductOptions(product.id);
     setOptions(data);
@@ -62,6 +72,10 @@ const ProductInfo = ({ product, category, name, edit }) => {
   const fetchAllProductDetails=async ()=>{
     const data=await getAllProductDetails(product.id);
     setProductDetails(data);
+    // if(data?.length>0){
+      setSizeId(data[0]?.size?.id)
+      setOptionId(data[0]?.option?.id)
+    // }
   }
   const handleSubmitOption = async (e) => {
     e.preventDefault();
@@ -159,7 +173,8 @@ const ProductInfo = ({ product, category, name, edit }) => {
     </Popover>
   );
   return (
-    <>
+    <div className="row">
+      <div className="col-7">
       <p>
         Category: <Link to={`category/${category?.id}`}>{category?.name}</Link>
       </p>
@@ -267,7 +282,7 @@ const ProductInfo = ({ product, category, name, edit }) => {
       <div className="d-flex mt-4">
           <h3 className="me-4">
             <b>
-              {price}<sup>₫</sup>
+              {priceFormat}{typeof price =="number"&&<sup>₫</sup>}
             </b>
           </h3>
           {edit && (
@@ -296,8 +311,12 @@ const ProductInfo = ({ product, category, name, edit }) => {
         show={showOption}
         title={"Option"}
         setShow={setShowOption}
-      />
-    </>
+      />  
+      </div>
+      <div className="col-5">
+        <QuantityComponent price={price} user={user} product={product.id} id={productDetailsId}/>
+      </div>
+    </div>
   );
 };
 ProductInfo.propTypes = {

@@ -16,6 +16,7 @@ import Product from "./components/admin/product/Product.jsx";
 import { store, persistor } from "./redux/store.js";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import ShoppingCartComponent from "./components/ShoppingCartContainer.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { element: <ProductDetails />, path: "product/:id" },
+      {element: <ShoppingCartComponent/>, path:"cart"}
     ],
   },
   {

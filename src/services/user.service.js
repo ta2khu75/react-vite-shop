@@ -33,7 +33,10 @@ const updateUser=(id, email, name, password,locked, roleId)=>{
 const deleteUser=(id)=>{
     return axios.delete(`admin/user/${id}`);
 }
+const getUserById=(id)=>{
+    return axios.get(`admin/user/${id}`);
+}
 const getPageUser=(page, size)=>{
     return axios.get(`admin/user?page=${page}&size=${size}`);
 }
-export {login, register, createUser, updateUser, deleteUser, getPageUser}
+export {login, register, createUser, updateUser, deleteUser, getPageUser,getUserById}

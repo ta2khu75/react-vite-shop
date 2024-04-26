@@ -11,7 +11,7 @@ const updateCategory = (id, name, image) => {
   const form = new FormData();
   form.append("name", name);
   console.log(image);
-  if (image !== null && image !== undefined) form.append("image", image);
+  if (image !== null && image !== undefined && typeof image !== "string") form.append("image", image);
   return axios.put(`admin/category/${id}`, form);
 };
 const deleteCategory = (id) => {

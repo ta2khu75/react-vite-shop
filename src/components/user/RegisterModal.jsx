@@ -5,7 +5,8 @@ import Form from "react-bootstrap/Form";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { register } from "../../services/user.service";
-const RegisterModal = ({ show, setShow }) => {
+import image from "../../assets/25b2ccba8f33a5157f161b6a50f64a60.png"
+const RegisterModal = ({ show, setShow, showLogin, setShowLogin }) => {
   const [email, setEmail] = useState("");
   const [emailInvali, setEmailInvali] = useState(false);
   const [password, setPassword] = useState("");
@@ -41,55 +42,65 @@ const RegisterModal = ({ show, setShow }) => {
   };
   return (
     <>
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={show} size="lg" onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Register</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={(event) => handleRegister(event)}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="Enter email"
-              />
-              {emailInvali && (
-                <Form.Text className="text-danger">Email Invalid</Form.Text>
-              )}
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicName">
-              <Form.Label>Full Name</Form.Label>
-              <Form.Control
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                type="text"
-                placeholder="Full Name"
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                type="password"
-                placeholder="Password"
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                type="password"
-                placeholder="Confirm Password"
-              />
-            </Form.Group>
-            <Button variant="danger" type="submit" className="w-100">
-              Submit
-            </Button>
-          </Form>
+          <div className="row">
+            <div className="col-7">
+              <Form onSubmit={(event) => handleRegister(event)}>
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="Enter email"
+                  />
+                  {emailInvali && (
+                    <Form.Text className="text-danger">Email Invalid</Form.Text>
+                  )}
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formBasicName">
+                  <Form.Label>Full Name</Form.Label>
+                  <Form.Control
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    type="text"
+                    placeholder="Full Name"
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    type="password"
+                    placeholder="Password"
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
+                  <Form.Label>Confirm Password</Form.Label>
+                  <Form.Control
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    type="password"
+                    placeholder="Confirm Password"
+                  />
+                </Form.Group>
+                <Button variant="danger" type="submit" className="w-100">
+                  Submit
+                </Button>
+              </Form>
+            </div>
+            <div className="col-5">
+                  <div className="d-flex justify-content-center align-items-center">
+                    <img src={image} className="w-100" alt="" />
+                  </div>
+            </div>
+          </div>
+
         </Modal.Body>
       </Modal>
     </>
@@ -98,5 +109,7 @@ const RegisterModal = ({ show, setShow }) => {
 RegisterModal.propTypes = {
   show: PropTypes.bool.isRequired,
   setShow: PropTypes.func.isRequired,
+  showLogin: PropTypes.bool.isRequired,
+  setShowLogin: PropTypes.func.isRequired
 };
 export default RegisterModal;
