@@ -12,17 +12,17 @@ import { resetToken } from "../redux/slice/accessTokenSlice";
 
 const Header = () => {
   const cart = useSelector((state) => state.shoppingCart.value);
-  const [numberCart, setNumberCart]=useState(0);
-  useEffect(()=>{
+  const [numberCart, setNumberCart] = useState(0);
+  useEffect(() => {
     setNumberCart(countCart);
-  },[cart])
+  }, [cart]);
   const countCart = () => {
     let totalCount = 0;
-    if(!Object.keys(cart).length>0)return 0;
+    if (!Object.keys(cart).length > 0) return 0;
     for (const seller in cart) {
-      const sellers = cart[seller]
-      for(const product in sellers){
-         totalCount+=Object.keys(sellers[product]).length
+      const sellers = cart[seller];
+      for (const product in sellers) {
+        totalCount += Object.keys(sellers[product]).length;
       }
     }
     return totalCount;
@@ -159,8 +159,16 @@ const Header = () => {
           </Navbar.Collapse>
         </div>
       </Navbar>
-      <RegisterModal showLogin={showLogin} setShowLogin={setShowLogin} show={showRegister} setShow={setShowRegister} />
-      <LoginModal showRegister={showRegister} setShowRegister={setShowRegister} show={showLogin} setShow={setShowLogin} />
+      <RegisterModal
+        setShowLogin={setShowLogin}
+        show={showRegister}
+        setShow={setShowRegister}
+      />
+      <LoginModal
+        setShowRegister={setShowRegister}
+        show={showLogin}
+        setShow={setShowLogin}
+      />
     </>
   );
 };

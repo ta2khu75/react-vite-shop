@@ -4,13 +4,13 @@ import PropTypes from "prop-types"
 import { useEffect, useState } from "react";
 import { getAllProductDetails } from "../services/productDetails.service";
 const ProductItem = ({product}) => {
-  const [productDetails, setProductDetails]=useState([]);
+  // const [productDetails, setProductDetails]=useState([]);
   const [price, setPrice]=useState("Contact")
   const [priceFormat, setPriceFormat]=useState("Contact");
   useEffect(()=>{fetchAllProductDetails()},[])
   const fetchAllProductDetails=async()=>{
     const data=await getAllProductDetails(product.id);
-    setProductDetails(data);
+    // setProductDetails(data);
     if(data && data.length>0){
       setPrice((1*data[0].price));
       setPriceFormat((1*data[0].price).toLocaleString("vi-VN"))
@@ -18,10 +18,10 @@ const ProductItem = ({product}) => {
   }
   return (
     <Link to={`product/${product.id}`}>
-      <Card style={{ width: "100%" }} className="mb-4">
+      <Card style={{ width: "100%", height:"280px" }} className="mb-4">
         <Card.Img variant="top" src={product.imageUrl} />
-        <Card.Body className="">
-          <div>{product.name}</div>
+        <Card.Body className="p-1">
+          <div className="text-break" style={{height:"40px", overflow:"hidden", WebkitLineClamp: 2, display:"-webkit-box" }}>{product.name}</div>
           <Card.Title><b>{priceFormat}{typeof price == "number"&&<sup>₫</sup>}</b></Card.Title>
         </Card.Body>
       </Card>

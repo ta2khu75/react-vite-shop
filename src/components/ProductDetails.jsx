@@ -9,7 +9,6 @@ import {
 } from "../services/productImage.service";
 import { useParams } from "react-router-dom";
 import { getProduct, getProductImage } from "../services/product.service";
-import QuantityComponent from "./product/QuantityComponent";
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState({});
@@ -92,9 +91,6 @@ const ProductDetails = () => {
           product={product}
         />
       </div>
-      {/* <div className="col-3">
-        <QuantityComponent/>
-      </div> */}
     </div>
   );
 };

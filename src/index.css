@@ -1,4 +1,6 @@
-
+div.d-flex.justify-content-center{
+  background-color: #f5f5fa;
+}
 /* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

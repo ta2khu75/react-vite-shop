@@ -4,23 +4,26 @@ import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { addToCart, setInit } from "../../redux/slice/shoppingCardSlice";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 const QuantityComponent = ({ price, id, user, product }) => {
   const [quantity, setQuantity] = useState(1);
   const [disabled, setDisabled] = useState(true);
   const [total, setTotal] = useState(0);
   const dispatch = useDispatch();
+  const handleAddToCart = () => {
+    dispatch(
+      addToCart({
+        productDetails: id,
+        quantity,
+        product,
+        seller: user.id,
+      })
+    );
+    toast.info("Added to Shopping cart");
+  };
   useEffect(() => {
-    // console.log(typeof price*1);
-    // console.log(typeof price);
-    // console.log(!isNaN(price));
     if (!isNaN(price)) {
-      //   // console.log(price);
-      //   // let total = quantity * Number(price);
-      //   // console.log(typeof quantity);
-      // // console.log("Total:", total);
-      // console.log("price",price);
       const result = quantity * price;
-      // const formattedMoney = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quantity*price);
       setTotal(result.toLocaleString("vi-VN"));
       setDisabled(false);
     } else {
@@ -76,16 +79,7 @@ const QuantityComponent = ({ price, id, user, product }) => {
       </Button>
       <Button
         className="w-100"
-        onClick={() =>
-          dispatch(
-            addToCart({
-              productDetails: id,
-              quantity,
-              product,
-              seller: user.id,
-            })
-          )
-        }
+        onClick={() => handleAddToCart()}
         disabled={disabled}
         variant="outline-primary"
       >
@@ -101,14 +95,3 @@ QuantityComponent.propTypes = {
   product: PropTypes.number.isRequired,
 };
 export default QuantityComponent;
-
-//  value: {
-//     '2': {
-//       '1': 1,
-//       '2': 3
-//     }
-//     '2':{
-//       '3':3,
-//       '4':2
-//     }
-//   }

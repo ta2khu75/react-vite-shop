@@ -8,7 +8,6 @@ const createProduct = (categoryId, name, thumbnail, active) => {
   form.append("name", name);
   if (thumbnail != null) form.append("thumbnail", thumbnail);
   form.append("active", active);
-  form.append("userId", 2);
   return axios.post("admin/product", form);
 };
 const updateProduct = (id, categoryId, name, thumbnail, active) => {
@@ -17,7 +16,6 @@ const updateProduct = (id, categoryId, name, thumbnail, active) => {
   form.append("name", name);
   if (typeof thumbnail !== "string") form.append("thumbnail", thumbnail);
   form.append("active", active);
-  form.append("userId", 24);
   return axios.put(`admin/product/${id}`, form);
 };
 const deleteProduct = (id) => {
