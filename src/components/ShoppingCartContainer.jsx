@@ -21,16 +21,47 @@ const ShoppingCartComponent = () => {
   const dispatch = useDispatch();
   const shoppingCart = useSelector((state) => state.shoppingCart.value);
   const checkAll = useSelector((state) => state.shoppingCart.checkAll);
-  const [carts, setCarts] = useState(shoppingCart);
   const [totalMoney, setTotalMoney] = useState(0);
+  const [numberCart, setNumberCart] = useState(0);
+  const [numberCartChecked, setNumberCartChecked] = useState(0);
   const [sellers, setSellers] = useState([]);
   useEffect(() => {
     fetchAllCart();
-    calculatorAllCartTrue(shoppingCart);
   }, []);
-  useEffect(() => {}, carts);
-  const calculatorAllCartTrue = async (shoppingCart) => {
-    console.log(shoppingCart);
+  useEffect(() => {
+    countCart();
+    countCartChecked();
+    calculatorAllCartTrue();
+  }, [JSON.stringify(shoppingCart)]);
+  const countCart = () => {
+    let totalCount = 0;
+    if (!Object.keys(shoppingCart).length > 0) return 0;
+    for (const seller in shoppingCart) {
+      const sellers = shoppingCart[seller];
+      for (const product in sellers) {
+        totalCount += Object.keys(sellers[product]).length;
+      }
+    }
+    setNumberCart(totalCount);
+  };
+  const countCartChecked = () => {
+    let totalChecked = 0;
+    if (!Object.keys(shoppingCart).length > 0) return 0;
+    for (const seller in shoppingCart) {
+      const sellers = shoppingCart[seller];
+      for (const product in sellers) {
+        console.log(product);
+        if (product == "checked") continue;
+        for (const productDetails in sellers[product]) {
+          if (sellers[product][productDetails].checked) {
+            totalChecked += 1;
+          }
+        }
+      }
+    }
+    setNumberCartChecked(totalChecked);
+  };
+  const calculatorAllCartTrue = async () => {
     let money = 0;
     for (const sellerId in shoppingCart) {
       const productIds = shoppingCart[`${sellerId}`];
@@ -68,17 +99,6 @@ const ShoppingCartComponent = () => {
     }
     setSellers(sellerList);
   };
-  const handleChangeAll = () => {
-    dispatch(setCheckAll(!checkAll));
-    setCarts(shoppingCart);
-    calculatorAllCartTrue(carts);
-  };
-
-  const handleChangeSeller = () => {
-    setCarts(shoppingCart);
-    calculatorAllCartTrue(carts);
-  };
-  // handleChangeCart
   const handleRemoveFromCart = ({ seller, product, productDetails }) => {
     dispatch(removeFromCart({ seller, product, productDetails }));
   };
@@ -96,10 +116,10 @@ const ShoppingCartComponent = () => {
                   <Form.Check
                     type="checkbox"
                     checked={checkAll}
-                    onChange={() => handleChangeAll()}
+                    onChange={() => dispatch(setCheckAll(!checkAll))}
                   />
                 </th>
-                <th>All (1 product)</th>
+                <th>All ({numberCart} product)</th>
                 <th className="text-center">Price</th>
                 <th className="text-center">Quantity</th>
                 <th className="text-center">Into money</th>
@@ -118,6 +138,7 @@ const ShoppingCartComponent = () => {
             </thead>
             {sellers.map((seller) => {
               const sell = shoppingCart[`${seller.id}`];
+              if (sell == undefined) return;
               const sellerCheck = shoppingCart[`${seller.id}`].checked;
               return (
                 sell && (
@@ -129,16 +150,14 @@ const ShoppingCartComponent = () => {
                           <Form.Check
                             type="checkbox"
                             checked={sellerCheck}
-                            onChange={() => {
+                            onChange={() =>
                               dispatch(
                                 checkSeller({
                                   seller: seller.id,
                                   checked: !sellerCheck,
                                 })
-                              );
-                              setCarts(shoppingCart);
-                              calculatorAllCartTrue(carts);
-                            }}
+                              )
+                            }
                           />
                         </td>
                         <td colSpan={5}>
@@ -163,6 +182,12 @@ const ShoppingCartComponent = () => {
                           prod && (
                             <>
                               {product.productDetails.map((productDetails) => {
+                                if (
+                                  shoppingCart[`${seller.id}`][`${product.id}`][
+                                    `${productDetails.id}`
+                                  ] == undefined
+                                )
+                                  return;
                                 const quantity =
                                   shoppingCart[`${seller.id}`][`${product.id}`][
                                     `${productDetails.id}`
@@ -196,9 +221,6 @@ const ShoppingCartComponent = () => {
                                                 checked: !cartChecked,
                                               })
                                             );
-                                            setCarts(shoppingCart);
-                                            await calculatorAllCartTrue(carts);
-                                            calculatorAllCartTrue(carts);
                                           }}
                                         />
                                       </td>
@@ -261,7 +283,10 @@ const ShoppingCartComponent = () => {
                                                   seller: seller.id,
                                                   productDetails:
                                                     productDetails.id,
-                                                  quantity: e.target.value,
+                                                  quantity:
+                                                    e.target.value == ""
+                                                      ? quantity
+                                                      : e.target.value,
                                                 })
                                               )
                                             }
@@ -332,10 +357,9 @@ const ShoppingCartComponent = () => {
           </Table>
           <div className="w-25 ms-3">
             <TotalMoneyComponent
-              shoppingCart={shoppingCart}
+              numberCartChecked={numberCartChecked}
               totalMoney={totalMoney}
             />
-            {/* <Image src={empty} /> */}
           </div>
         </div>
       )}

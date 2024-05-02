@@ -1,7 +1,10 @@
 import { Button } from "react-bootstrap";
 import PropTypes from "prop-types";
-const TotalMoneyComponent = ({ totalMoney }) => {
-  const formattedMoney = (totalMoney).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+const TotalMoneyComponent = ({ totalMoney, numberCartChecked }) => {
+  const formattedMoney = totalMoney.toLocaleString("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
   return (
     <>
       <div className="p-4 mb-3" style={{ background: "#ffffff" }}>
@@ -19,13 +22,13 @@ const TotalMoneyComponent = ({ totalMoney }) => {
         </div>
       </div>
       <Button variant="danger" className="w-100">
-        Buy Now
+        ({numberCartChecked}) Buy Now
       </Button>
     </>
   );
 };
 TotalMoneyComponent.propTypes = {
   totalMoney: PropTypes.number.isRequired,
-  //   sellers: PropTypes.object.isRequired,
+  numberCartChecked: PropTypes.number.isRequired,
 };
 export default TotalMoneyComponent;

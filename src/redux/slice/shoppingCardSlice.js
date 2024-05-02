@@ -18,17 +18,30 @@ export const shoppingCartSlice = createSlice({
       // neu chua co thi tao
       if (!state.value[`${sellerId}`][`${productId}`])
         state.value[`${sellerId}`][`${productId}`] = {};
-
-      state.value[`${sellerId}`][`${productId}`][`${productDetailId}`] = state
-        .value[`${sellerId}`][`${productId}`][`${productDetailId}`]
-        ? {
-            ...state.value[`${sellerId}`][`${productId}`][`${productDetailId}`],
-            quantity:
-              state.value[`${sellerId}`][`${productId}`][`${productDetailId}`]
-                .quantity +
-              action.payload.quantity * 1,
-          }
-        : { quantity: action.payload.quantity * 1, checked: false };
+      const productDetails =
+        state.value[`${sellerId}`][`${productId}`][`${productDetailId}`];
+      if (productDetails) {
+        state.value[`${sellerId}`][`${productId}`][`${productDetailId}`] = {
+          ...productDetails,
+          quantity: productDetails.quantity + action.payload.quantity * 1,
+        };
+      } else {
+        state.value[`${sellerId}`][`${productId}`][`${productDetailId}`] = {
+          quantity: action.payload.quantity * 1,
+          checked: false,
+        };
+        state.checkAll = false;
+      }
+      // = state
+      //   .value[`${sellerId}`][`${productId}`][`${productDetailId}`]
+      //   ? {
+      //       ...state.value[`${sellerId}`][`${productId}`][`${productDetailId}`],
+      //       quantity:
+      //         state.value[`${sellerId}`][`${productId}`][`${productDetailId}`]
+      //           .quantity +
+      //         action.payload.quantity * 1,
+      //     }
+      //   :
     },
     decrementCart: (state, action) => {
       const sellerId = action.payload.seller;
@@ -43,79 +56,67 @@ export const shoppingCartSlice = createSlice({
           Object.keys(state.value[`${sellerId}`][`${productId}`]).length === 0
         ) {
           delete state.value[`${sellerId}`][`${productId}`];
-          if (Object.keys(state.value[`${sellerId}`]).length === 0) {
+          if (Object.keys(state.value[`${sellerId}`]).length === 1) {
             delete state.value[`${sellerId}`];
           }
         }
         return;
       }
-      state.value[`${sellerId}`][`${productId}`][`${productDetailId}`] = {
-        ...state.value[`${sellerId}`][`${productId}`][`${productDetailId}`],
-        quantity:
-          state.value[`${sellerId}`][`${productId}`][`${productDetailId}`]
-            .quantity - 1,
-      };
+      state.value[`${sellerId}`][`${productId}`][
+        `${productDetailId}`
+      ].quantity -= 1;
     },
     incrementCart: (state, action) => {
       const sellerId = action.payload.seller;
       const productDetailId = action.payload.productDetails;
       const productId = action.payload.product;
-      state.value[`${sellerId}`][`${productId}`][`${productDetailId}`] = {
-        ...state.value[`${sellerId}`][`${productId}`][`${productDetailId}`],
-        quantity:
-          state.value[`${sellerId}`][`${productId}`][`${productDetailId}`]
-            .quantity + 1,
-      };
+      state.value[`${sellerId}`][`${productId}`][
+        `${productDetailId}`
+      ].quantity += 1;
     },
     setCart: (state, action) => {
       const sellerId = action.payload.seller;
       const productDetailId = action.payload.productDetails;
       const productId = action.payload.product;
-      state.value[`${sellerId}`][`${productId}`][`${productDetailId}`] = {
-        ...state.value[`${sellerId}`][`${productId}`][`${productDetailId}`],
-        quantity: action.payload.quantity * 1,
-      };
+      state.value[`${sellerId}`][`${productId}`][
+        `${productDetailId}`
+      ].quantity = action.payload.quantity * 1;
     },
     checkCart: (state, action) => {
       const sellerId = action.payload.seller;
       const productDetailId = action.payload.productDetails;
       const productId = action.payload.product;
       const checked = action.payload.checked;
-      state.value[`${sellerId}`][`${productId}`][`${productDetailId}`] = {
-        ...state.value[`${sellerId}`][`${productId}`][`${productDetailId}`],
-        checked: action.payload.checked,
-      };
+      state.value[`${sellerId}`][`${productId}`][`${productDetailId}`].checked =
+        checked;
       if (checked) {
         let sellerChecked = true;
         for (const productIds in state.value[`${sellerId}`]) {
           if (productIds === "checked") continue;
           const result = Object.keys(
             state.value[`${sellerId}`][`${productIds}`]
-          ).filter(
+          ).find(
             (cardId) =>
               !state.value[`${sellerId}`][`${productIds}`][`${cardId}`].checked
           );
-          if (result.length !== 0) {
+          if (result) {
             sellerChecked = false;
             break;
           }
         }
         if (sellerChecked) {
-          state.value[`${sellerId}`] = {
-            ...state.value[`${sellerId}`],
-            checked: true,
-          };
+          state.value[`${sellerId}`].checked = sellerChecked;
           for (const sellerIds in state.value) {
             for (const productIds in state.value[`${sellerIds}`]) {
               if (productIds === "checked") continue;
               const result = Object.keys(
                 state.value[`${sellerIds}`][`${productIds}`]
-              ).filter(
+              ).find(
                 (cardId) =>
                   !state.value[`${sellerIds}`][`${productIds}`][`${cardId}`]
                     .checked
               );
-              if (result.length !== 0) {
+              if (result) {
                 sellerChecked = false;
                 break;
               }
@@ -125,37 +126,32 @@ export const shoppingCartSlice = createSlice({
             }
           }
           if (sellerChecked) {
-            state.checkAll = true;
+            state.checkAll = sellerChecked;
           }
         }
       } else {
-        state.value[`${sellerId}`] = {
-          ...state.value[`${sellerId}`],
-          checked: false,
-        };
+        state.value[`${sellerId}`].checked = false;
         state.checkAll = false;
       }
     },
     checkSeller: (state, action) => {
       const sellerId = action.payload.seller;
-      state.value[`${sellerId}`] = {
-        ...state.value[`${sellerId}`],
-        checked: action.payload.checked,
-      };
-      setCheckSeller(state, sellerId, action.payload.checked);
-      if (action.payload.checked) {
+      const checked = action.payload.checked;
+      state.value[`${sellerId}`].checked = checked;
+      setCheckSeller(state, sellerId, checked);
+      if (checked) {
         let sellerChecked = true;
         for (const sellerIds in state.value) {
           for (const productIds in state.value[`${sellerIds}`]) {
             if (productIds === "checked") continue;
             const result = Object.keys(
               state.value[`${sellerIds}`][`${productIds}`]
-            ).filter(
+            ).find(
               (cardId) =>
                 !state.value[`${sellerIds}`][`${productIds}`][`${cardId}`]
                   .checked
             );
-            if (result.length !== 0) {
+            if (result) {
               sellerChecked = false;
               break;
             }
@@ -170,22 +166,11 @@ export const shoppingCartSlice = createSlice({
       } else {
         state.checkAll = false;
       }
-      // for (const productId in state.value[`${sellerId}`]) {
-      //   for (const productDetailId in state.value[`${sellerId}`][
-      //     `${productId}`
-      //   ]) {
-      //     state.value[`${sellerId}`][`${productId}`][`${productDetailId}`] = {
-      //       ...state.value[`${sellerId}`][`${productId}`][`${productDetailId}`],
-      //       checked: action.payload.checked,
-      //     };
-      //   }
-      // }
     },
     setCheckAll: (state, action) => {
       state.checkAll = action.payload;
       for (const sellerId in state.value) {
         setCheckSeller(state, sellerId, state.checkAll);
-        //checkSeller({ seller: sellerId, checked: state.checkAll });
       }
     },
     removeFromCart: (state, action) => {
@@ -197,7 +182,7 @@ export const shoppingCartSlice = createSlice({
         Object.keys(state.value[`${sellerId}`][`${productId}`]).length === 0
       ) {
         delete state.value[`${sellerId}`][`${productId}`];
-        if (Object.keys(state.value[`${sellerId}`]).length === 0) {
+        if (Object.keys(state.value[`${sellerId}`]).length === 1) {
           delete state.value[`${sellerId}`];
         }
       }
